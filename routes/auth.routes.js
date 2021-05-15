@@ -7,8 +7,8 @@ router.post("/register", async (req, res) => {
   try {
     const existEmail = await User.findOne({ email: req.body.email });
     if (existEmail)
-      return res.json({
-        message: "Email exist",
+      return res.status(422).json({
+        err_message: "Email exist",
       });
 
     const salt = await bcrypt.genSalt(16);
@@ -32,28 +32,34 @@ router.post("/register", async (req, res) => {
       address: savedAddress._id,
     });
     const savedUser = await newUser.save();
-    return res.json(savedUser);
+    return res.status(201).json({ user: savedUser });
   } catch (err) {
-    return res.json(err);
+    return res.status(500).json({ err_message: err });
   }
 });
 router.post("/login", async (req, res) => {
   try {
     const userExist = await User.findOne({ email: req.body.email });
-    if (!userExist) return res.json({ message: "Email/Password Wrong" });
+    if (!userExist)
+      return res.status(401).json({ err_message: "Email/Password Wrong" });
     const validPassword = await bcrypt.compare(
       req.body.password,
       userExist.password
     );
-    if (!validPassword) return res.json({ message: "Email/Password Wrong" });
+    if (!validPassword)
+      return res.status(401).json({ err_message: "Email/Password Wrong" });
     const token = jwt.sign(
-      { _id: userExist._id, isActive: userExist.isActive },
+      {
+        _id: userExist._id,
+        isActive: userExist.isActive,
+        signature: userExist.signature,
+      },
       "ezifhaezdf74",
       { expiresIn: "2 days" }
     );
-    return res.json({ token: token, user: userExist });
+    return res.status(200).json({ token: token, user: userExist });
   } catch (err) {
-    return res.json(err);
+    return res.status(500).json({ err_message: err });
   }
 });
 module.exports = router;

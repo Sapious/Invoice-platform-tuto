@@ -13,11 +13,13 @@ mongoose.connection.on("error", (err) => {
 
 //import route middlewares
 const authRoutes = require("./routes/auth.routes");
+const invoiceRoutes = require("./routes/invoice.routes");
 //middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 //routes middlewares
 app.use("/auth", authRoutes);
+app.use("/invoices", invoiceRoutes);
 //server listening
 const port = 8000;
 app.listen(port, () => {
