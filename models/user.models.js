@@ -16,6 +16,18 @@ const UserSchema = new Schema(
   { timestamps: true }
 );
 UserSchema.plugin(uniqueValidator, {
-  message: "data is not unique",
+  message: "is not unique",
 });
+UserSchema.pre("validate", function (next) {
+  if (!this.signature) {
+    this.generateSignature();
+  }
+  next();
+});
+
+UserSchema.methods.generateSignature = function () {
+  this.signature =
+    ((Math.random() * Math.pow(36, 6)) | 0).toString(36) +
+    ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
+};
 module.exports = mongoose.model("User", UserSchema);

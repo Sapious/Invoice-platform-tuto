@@ -18,7 +18,6 @@ const createInvoice = async (req, res) => {
         signature: req.verifiedUser.signature,
       },
     });
-
     const savedInvoice = await newInvoice.save();
     return res.status(201).json({ invoice: savedInvoice });
   } catch (err) {
