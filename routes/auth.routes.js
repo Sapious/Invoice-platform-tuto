@@ -3,6 +3,15 @@ const User = require("../models/user.models");
 const Address = require("../models/address.models");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const verifyToken = require("../middlewares/verifyToken");
+router.get("/authcheck", verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.verifiedUser._id);
+    return res.status(200).json({ user: user });
+  } catch (err) {
+    return res.status(500).json({ err_message: err });
+  }
+});
 router.post("/register", async (req, res) => {
   try {
     const existEmail = await User.findOne({ email: req.body.email });

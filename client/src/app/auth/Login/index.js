@@ -1,7 +1,9 @@
-import axios from "axios";
 import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
-const Login = () => {
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { login } from "../../../actions/auth.actions";
+const Login = ({ login, auth }) => {
   const [loginForm, setloginForm] = useState({
     email: "",
     password: "",
@@ -12,19 +14,9 @@ const Login = () => {
   };
   const onFormSubmit = async (e) => {
     e.preventDefault();
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    const res = await axios.post(
-      "http://localhost:8000/auth/login",
-      loginForm,
-      config
-    );
-    localStorage.setItem("access_token", res.data.token);
+    login(loginForm);
   };
-  if (localStorage.getItem("access_token")) {
+  if (auth.isAuthenticated) {
     history.push("/");
   }
   return (
@@ -37,14 +29,12 @@ const Login = () => {
             Invoice Login
           </div>
           <div class="mb-4">
-            <label
-              class="block text-gray-700 text-sm font-normal mb-2"
-              for="email">
+            <label class="block text-dark text-sm font-normal mb-2" for="email">
               Email
             </label>
             <input
               onChange={(e) => onChangeForm(e)}
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-dark leading-tight focus:outline-none focus:shadow-outline"
               name="email"
               id="email"
               type="email"
@@ -54,13 +44,13 @@ const Login = () => {
           </div>
           <div class="mb-6">
             <label
-              class="block text-gray-700 text-sm font-normal mb-2"
+              class="block text-dark text-sm font-normal mb-2"
               for="password">
               Password
             </label>
             <input
               onChange={(e) => onChangeForm(e)}
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-dark mb-3 leading-tight focus:outline-none focus:shadow-outline"
               type="password"
               placeholder="Password"
               name="password"
@@ -70,13 +60,13 @@ const Login = () => {
           </div>
           <div class="flex items-center justify-between">
             <button
-              class="px-4 py-2 rounded text-white inline-block shadow-lg bg-blue-500 hover:bg-blue-600 focus:bg-blue-700"
+              class="px-4 py-2 rounded text-white inline-block shadow-lg bg-primary hover:bg-primary-shade focus:bg-primary-shade"
               type="submit">
               Sign In
             </button>
             <Link
               to="/forget"
-              class="inline-block align-baseline font-normal text-sm text-blue-500 hover:text-blue-800">
+              class="inline-block align-baseline font-normal text-sm text-primary hover:text-primary-shade">
               Forgot Password?
             </Link>
           </div>
@@ -85,5 +75,16 @@ const Login = () => {
     </div>
   );
 };
+Login.propTypes = {
+  login: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+};
+const mapStateToProps = (state) => ({
+  auth: state.authReducer
+});
 
-export default Login;
+const mapDispatchToProps = {
+  login,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

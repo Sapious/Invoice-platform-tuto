@@ -1,10 +1,21 @@
-const colors = require('tailwindcss/colors')
+const colors = require("tailwindcss/colors");
 
 module.exports = {
   purge: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
   presets: [],
   darkMode: false, // or 'media' or 'class'
   theme: {
+    extend: {
+      colors: {
+        primary: "#005fff",
+        secondary: "#EDF1F4",
+        "secondary-shade": "#BDC9D8",
+        dark: "#494d65",
+        "primary-shade": "#0451d7",
+        danger: "#FF3919",
+        success: "#0bc979",
+      },
+    },
     screens: {
       sm: "640px",
       md: "768px",

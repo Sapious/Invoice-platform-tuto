@@ -1,7 +1,10 @@
-import axios from "axios";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-const Register = () => {
+import { Link, useHistory } from "react-router-dom";
+import { register } from "../../../actions/auth.actions";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+const Register = ({ register }) => {
+  let history = useHistory();
   const [RegisterForm, setRegisterForm] = useState({
     email: "",
     password: "",
@@ -19,17 +22,9 @@ const Register = () => {
   };
   const onFormSubmit = async (e) => {
     e.preventDefault();
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
     if (RegisterForm.password === RegisterForm.confirmPassword) {
-      const res = await axios.post(
-        "http://localhost:8000/auth/register",
-        RegisterForm,
-        config
-      );
+      await register(RegisterForm);
+      history.push("/login");
     } else {
       console.log("password don't match");
     }
@@ -46,13 +41,13 @@ const Register = () => {
           <div className="flex w-full gap-4">
             <div class="mb-4 w-1/2">
               <label
-                class="block text-gray-700 text-sm font-normal mb-2"
+                class="block text-dark text-sm font-normal mb-2"
                 for="firstName">
                 First Name
               </label>
               <input
                 onChange={(e) => onChangeForm(e)}
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-dark leading-tight focus:outline-none focus:shadow-outline"
                 name="firstName"
                 id="firstName"
                 type="text"
@@ -62,13 +57,13 @@ const Register = () => {
             </div>
             <div class="mb-4 w-1/2">
               <label
-                class="block text-gray-700 text-sm font-normal mb-2"
+                class="block text-dark text-sm font-normal mb-2"
                 for="lastName">
                 Last Name
               </label>
               <input
                 onChange={(e) => onChangeForm(e)}
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-dark leading-tight focus:outline-none focus:shadow-outline"
                 name="lastName"
                 id="lastName"
                 type="text"
@@ -80,13 +75,13 @@ const Register = () => {
           <div className="flex w-full gap-4">
             <div class="mb-4 w-1/2">
               <label
-                class="block text-gray-700 text-sm font-normal mb-2"
+                class="block text-dark text-sm font-normal mb-2"
                 for="IDCard">
                 ID CARD
               </label>
               <input
                 onChange={(e) => onChangeForm(e)}
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-dark leading-tight focus:outline-none focus:shadow-outline"
                 name="IDCard"
                 id="IDCard"
                 type="number"
@@ -96,13 +91,13 @@ const Register = () => {
             </div>
             <div class="mb-4 w-1/2">
               <label
-                class="block text-gray-700 text-sm font-normal mb-2"
+                class="block text-dark text-sm font-normal mb-2"
                 for="phoneNumber">
                 Phone Number
               </label>
               <input
                 onChange={(e) => onChangeForm(e)}
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-dark leading-tight focus:outline-none focus:shadow-outline"
                 name="phoneNumber"
                 id="phoneNumber"
                 type="number"
@@ -112,14 +107,12 @@ const Register = () => {
             </div>
           </div>
           <div class="mb-4">
-            <label
-              class="block text-gray-700 text-sm font-normal mb-2"
-              for="email">
+            <label class="block text-dark text-sm font-normal mb-2" for="email">
               Email
             </label>
             <input
               onChange={(e) => onChangeForm(e)}
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-dark leading-tight focus:outline-none focus:shadow-outline"
               name="email"
               id="email"
               type="email"
@@ -129,13 +122,13 @@ const Register = () => {
           </div>
           <div class="mb-4">
             <label
-              class="block text-gray-700 text-sm font-normal mb-2"
+              class="block text-dark text-sm font-normal mb-2"
               for="password">
               Password
             </label>
             <input
               onChange={(e) => onChangeForm(e)}
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-dark mb-3 leading-tight focus:outline-none focus:shadow-outline"
               type="password"
               placeholder="Password"
               name="password"
@@ -145,13 +138,13 @@ const Register = () => {
           </div>
           <div class="mb-4">
             <label
-              class="block text-gray-700 text-sm font-normal mb-2"
+              class="block text-dark text-sm font-normal mb-2"
               for="password">
               Confirm Password
             </label>
             <input
               onChange={(e) => onChangeForm(e)}
-              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-dark mb-3 leading-tight focus:outline-none focus:shadow-outline"
               type="password"
               placeholder="Password"
               name="confirmPassword"
@@ -162,13 +155,13 @@ const Register = () => {
           <div className="flex w-full gap-4">
             <div class="mb-4 w-1/3">
               <label
-                class="block text-gray-700 text-sm font-normal mb-2"
+                class="block text-dark text-sm font-normal mb-2"
                 for="city">
                 City
               </label>
               <input
                 onChange={(e) => onChangeForm(e)}
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-dark leading-tight focus:outline-none focus:shadow-outline"
                 name="city"
                 id="city"
                 type="text"
@@ -178,13 +171,13 @@ const Register = () => {
             </div>
             <div class="mb-4 w-1/3">
               <label
-                class="block text-gray-700 text-sm font-normal mb-2"
+                class="block text-dark text-sm font-normal mb-2"
                 for="street">
                 Street
               </label>
               <input
                 onChange={(e) => onChangeForm(e)}
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-dark leading-tight focus:outline-none focus:shadow-outline"
                 name="street"
                 id="street"
                 type="text"
@@ -193,13 +186,13 @@ const Register = () => {
             </div>
             <div class="mb-4 w-1/3">
               <label
-                class="block text-gray-700 text-sm font-normal mb-2"
+                class="block text-dark text-sm font-normal mb-2"
                 for="zipCode">
                 Zip Code
               </label>
               <input
                 onChange={(e) => onChangeForm(e)}
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-dark leading-tight focus:outline-none focus:shadow-outline"
                 name="zipCode"
                 id="zipCode"
                 type="number"
@@ -210,12 +203,12 @@ const Register = () => {
           </div>
           <div class="flex items-center justify-between">
             <button
-              class="px-4 py-2 rounded text-white inline-block shadow-lg bg-blue-500 hover:bg-blue-600 focus:bg-blue-700"
+              class="px-4 py-2 rounded text-white inline-block shadow-lg bg-primary hover:bg-primary-shade focus:bg-primary-shade"
               type="submit">
               Register
             </button>
             <Link
-              class="inline-block align-baseline font-normal text-sm text-blue-500 hover:text-blue-800"
+              class="inline-block align-baseline font-bold hover:underline text-sm text-primary hover:text-primary-shade"
               to="/login">
               Go to Login
             </Link>
@@ -225,5 +218,13 @@ const Register = () => {
     </div>
   );
 };
+Register.propTypes = {
+  register: PropTypes.func.isRequired,
+};
+const mapStateToProps = (state) => ({});
 
-export default Register;
+const mapDispatchToProps = {
+  register,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Register);
