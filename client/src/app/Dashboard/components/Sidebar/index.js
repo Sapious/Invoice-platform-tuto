@@ -6,7 +6,7 @@ const Sidebar = () => {
       <div className="w-full text-white font-semibold uppercase py-4 h-20 flex items-center justify-center px-6 text-center mb-10">
         logo
       </div>
-      <div className=" w-full flex flex-col gap-2 h-4/5">
+      <div className=" w-full flex flex-col gap-2 h-5/6">
         <NavLink
           activeClassName="bg-primary-shade"
           exact
@@ -18,10 +18,10 @@ const Sidebar = () => {
         <NavLink
           activeClassName="bg-primary-shade"
           exact
-          to="/dashboard/invoice"
+          to="/dashboard/invoices"
           className="py-4 px-6 hover:bg-primary-shade text-white font-semibold uppercase rounded-l-full ease-in-out duration-200 flex items-center gap-2">
           <i class="fas fa-file-invoice"></i>
-          <span>Invoice</span>
+          <span>Invoices</span>
         </NavLink>
         <NavLink
           activeClassName="bg-primary-shade"
@@ -31,7 +31,7 @@ const Sidebar = () => {
           <span>test</span>
         </NavLink>
       </div>
-      <div className="w-full flex flex-col text-white font-semibold uppercase h-1/5">
+      <div className="w-full flex flex-col text-white font-semibold uppercase h-1/6 justify-end pb-5">
         <Link
           to="/dashboard/invoice"
           className="py-4 px-6 hover:bg-primary-shade text-white font-semibold uppercase rounded-l-full ease-in-out duration-200">

@@ -13,7 +13,11 @@ module.exports = {
         dark: "#494d65",
         "primary-shade": "#0451d7",
         danger: "#FF3919",
+        "danger-shade": "#BF2A13",
+        "danger-tint": "#E63217",
         success: "#0bc979",
+        "success-tint": "#0BD681",
+        "success-shade": "#09B06A",
       },
     },
     screens: {

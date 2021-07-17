@@ -6,10 +6,11 @@ const InvoiceSchema = new Schema(
     buyer: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     seller: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     reference: { type: String, required: true, unique: true, index: true },
+    title: { type: String, required: true },
+    description: { type: String },
     items: [
       {
         name: { type: String, maxlength: 256, required: true },
-        description: { type: String, maxlength: 1024 },
         quantity: { type: Number, min: 1, required: true },
         unitPrice: { type: Number, min: 0, required: true },
         subTotal: { type: Number, min: 0, required: true },
@@ -17,10 +18,10 @@ const InvoiceSchema = new Schema(
     ],
     total: { type: Number, min: 0, required: true },
     isPayed: { type: Boolean, default: false },
-    status: { type: String, default: "waiting_confirmation" }, // waiting_confirmation, canceled, confirmed
+    status: { type: String, default: "pending" }, // pending, canceled, confirmed
     buyerConfirmation: {
       signature: { type: String },
-      status: { type: String, default: "waiting_confirmation" },
+      status: { type: String, default: "pending" },
       confirmationDate: { type: Date },
     },
     sellerConfirmation: {
@@ -28,6 +29,8 @@ const InvoiceSchema = new Schema(
       status: { type: String, default: "confirmed" },
       confirmationDate: { type: Date, default: Date.now() },
     },
+    issueDate: { type: Date },
+    dueDate: { type: Date },
   },
   { timestamps: true }
 );

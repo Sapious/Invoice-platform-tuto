@@ -12,6 +12,9 @@ const createInvoice = async (req, res) => {
   try {
     const newInvoice = new Invoice({
       seller: req.verifiedUser._id,
+      issueDate: req.body.issueDate,
+      dueDate: req.body.dueDate,
+      title: req.body.title,
       items: req.body.items,
       total: req.body.total,
       sellerConfirmation: {
