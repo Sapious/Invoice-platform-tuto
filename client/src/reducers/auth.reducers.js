@@ -5,6 +5,7 @@ import {
   USER_LOADING,
   USER_LOADED,
   USER_LOGOUT,
+  AUTH_ERROR,
 } from "../constants/types";
 
 const initialState = {
@@ -51,6 +52,7 @@ export default function (state = initialState, action) {
         user: null,
         err: payload,
       };
+    case AUTH_ERROR:
     case USER_LOGOUT:
       localStorage.removeItem("token");
       return {

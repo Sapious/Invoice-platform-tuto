@@ -1,13 +1,26 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import NewInvoice from "./components/NewInvoice";
 import Status from "./components/Status";
-
-const Invoices = () => {
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import {
+  getOwnInvoices,
+  cancelInvoice,
+} from "../../../actions/invoice.actions";
+import { parseISO, format } from "date-fns";
+import Spinner from "../../shared/Spinner";
+import { Link } from "react-router-dom";
+const Invoices = ({ getOwnInvoices, invoiceState, cancelInvoice, spinner }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const closeModal = (e) => {
     setIsModalOpen(false);
   };
-  return (
+  useEffect(() => {
+    getOwnInvoices();
+  }, []);
+  return spinner.loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       {isModalOpen && <NewInvoice closeModal={closeModal} />}
       <div className="py-4 px-12">
@@ -34,39 +47,89 @@ const Invoices = () => {
             <i class="fas fa-search text-dark"></i>
           </span>
         </div>
-
-        <div className="grid grid-cols-6 items-stretch mb-4">
-          <div className="px-2 text-dark font-medium">No.</div>
-          <div className="px-2 text-dark font-medium">Date</div>
-          <div className="px-2 text-dark font-medium col-span-2">Client</div>
-          <div className="px-2 text-dark font-medium">Amount</div>
-          <div className="px-2 text-dark font-medium">Status</div>
+        <div className="grid grid-cols-8 bg-white shadow-md py-3.5 justify-items-start items-center rounded-md mb-4">
+          <div className="px-2 text-dark font-medium">.No</div>
+          <div className="px-2 text-dark font-medium">Client</div>
+          <div className="px-2 text-dark font-medium col-span-2">Issued At</div>
+          <div className="px-2 text-dark font-medium col-span-2">Due on</div>
+          <div className="px-2 text-dark font-medium"> Status</div>
+          <div className="px-2 text-dark font-medium"> Action</div>
         </div>
-        <div className="grid grid-cols-6 bg-white shadow-md py-3.5 justify-items-start items-center rounded-md mb-4">
-          <div className="px-2 text-dark font-medium">text</div>
-          <div className="px-2 text-dark font-medium">test</div>
-          <div className="px-2 text-dark font-medium col-span-2">test</div>
-          <div className="px-2 text-dark font-medium">test</div>
-          <div className="px-2 text-dark font-medium">
-            <Status
-              text={"Confirmed"}
-              icon={"fas fa-check"}
-              color={"success"}
-            />
-          </div>
-        </div>
-        <div className="grid grid-cols-6 bg-white shadow-md py-3.5 justify-items-start items-center rounded-md">
-          <div className="px-2 text-dark font-medium">text</div>
-          <div className="px-2 text-dark font-medium">test</div>
-          <div className="px-2 text-dark font-medium col-span-2">test</div>
-          <div className="px-2 text-dark font-medium">test</div>
-          <div className="px-2 text-dark font-medium">
-            <Status text={"canceled"} icon={"fas fa-times"} color={"danger"} />
-          </div>
-        </div>
+        {invoiceState.invoices &&
+          invoiceState.invoices.map((elInvoice) => {
+            return (
+              <div className="grid grid-cols-8 bg-white shadow-md py-3.5 justify-items-start items-center rounded-md mb-4">
+                <div className="px-2 text-dark font-medium">
+                  #{elInvoice.reference}
+                </div>
+                <div className="px-2 text-dark font-medium capitalize">
+                  {elInvoice.buyer.firstName} {elInvoice.buyer.lastName}
+                </div>
+                <div className="px-2 text-dark font-medium col-span-2">
+                  {format(parseISO(elInvoice.issueDate), "PPPP")}
+                </div>
+                <div className="px-2 text-dark font-medium col-span-2">
+                  {format(parseISO(elInvoice.dueDate), "PPPP")}
+                </div>
+                <div className="px-2 text-dark font-medium">
+                  <Status
+                    text={elInvoice.status}
+                    icon={`${
+                      elInvoice.status === "confirmed"
+                        ? "fas fa-check"
+                        : elInvoice.status === "pending"
+                        ? "fas fa-hourglass-start"
+                        : "fas fa-times"
+                    }`}
+                    color={`${
+                      elInvoice.status === "confirmed"
+                        ? "success"
+                        : elInvoice.status === "pending"
+                        ? "warning"
+                        : "danger"
+                    }`}
+                  />
+                </div>
+                <div className="px-2 text-dark font-medium flex justify-start items-center gap-4">
+                  {elInvoice.status === "pending" && (
+                    <button
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        await cancelInvoice(elInvoice._id);
+                        await getOwnInvoices();
+                      }}
+                      type="button"
+                      className="py-1 px-2 rounded text-white inline-block bg-danger hover:bg-danger-shade focus:bg-danger-shade">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  )}
+                  <Link
+                    to={`/dashboard/invoices/${elInvoice.reference}`}
+                    className="py-1 px-2 rounded text-white inline-block bg-primary hover:bg-primary-shade focus:bg-primary-shade">
+                    <i class="fas fa-tv"></i>
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
       </div>
     </Fragment>
   );
 };
+Invoices.propTypes = {
+  getOwnInvoices: PropTypes.func.isRequired,
+  cancelInvoice: PropTypes.func.isRequired,
+  invoiceState: PropTypes.object.isRequired,
+  spinner: PropTypes.object.isRequired,
+};
+const mapStateToProps = (state) => ({
+  invoiceState: state.invoiceReducer,
+  spinner: state.spinnerReducer,
+});
 
-export default Invoices;
+const mapDispatchToProps = {
+  getOwnInvoices,
+  cancelInvoice,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Invoices);

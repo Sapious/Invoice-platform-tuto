@@ -4,6 +4,7 @@ import Home from "./Home";
 import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
 import Invoices from "./Invoices";
+import Invoice from "./Invoice";
 const Dashboard = () => {
   return (
     <Fragment>
@@ -17,6 +18,7 @@ const Dashboard = () => {
               className="bg-secondary rounded-bl-3xl -ml-6">
               <Route exact path="/dashboard" component={Home} />
               <Route exact path="/dashboard/invoices" component={Invoices} />
+              <Route exact path="/dashboard/invoices/:invoiceRef" component={Invoice} />
             </div>
           </Switch>
         </div>

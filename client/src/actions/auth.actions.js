@@ -7,9 +7,14 @@ import {
   USER_LOADED,
   AUTH_ERROR,
   USER_LOGOUT,
+  SPINNER_LOADED,
+  SPINNER_LOADING
 } from "../constants/types";
 import { setAuthToken } from "../utils/setAuthToken";
 export const login = (data) => async (dispatch) => {
+  dispatch({
+    type: SPINNER_LOADING
+  })
   const config = {
     headers: {
       "Content-Type": "application/json",
@@ -31,8 +36,14 @@ export const login = (data) => async (dispatch) => {
       payload: err,
     });
   }
+    dispatch({
+      type: SPINNER_LOADED,
+    });
 };
 export const register = (data) => async (dispatch) => {
+    dispatch({
+      type: SPINNER_LOADING,
+    });
   const config = {
     headers: {
       "Content-Type": "application/json",
@@ -49,9 +60,15 @@ export const register = (data) => async (dispatch) => {
       payload: err,
     });
   }
+    dispatch({
+      type: SPINNER_LOADED,
+    });
 };
 
 export const loadUser = () => async (dispatch) => {
+    dispatch({
+      type: SPINNER_LOADING,
+    });
   dispatch({
     type: USER_LOADING,
   });
@@ -70,7 +87,16 @@ export const loadUser = () => async (dispatch) => {
       payload: err,
     });
   }
+    dispatch({
+      type: SPINNER_LOADED,
+    });
 };
 export const logout = () => (dispatch) => {
+    dispatch({
+      type: SPINNER_LOADING,
+    });
   dispatch({ type: USER_LOGOUT });
+    dispatch({
+      type: SPINNER_LOADED,
+    });
 };

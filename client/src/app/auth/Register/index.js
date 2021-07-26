@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { register } from "../../../actions/auth.actions";
 import { connect } from "react-redux";
+import Spinner from "../../shared/Spinner";
 import PropTypes from "prop-types";
-const Register = ({ register }) => {
+const Register = ({ register, spinner }) => {
   let history = useHistory();
   const [RegisterForm, setRegisterForm] = useState({
     email: "",
@@ -29,7 +30,9 @@ const Register = ({ register }) => {
       console.log("password don't match");
     }
   };
-  return (
+  return spinner.loading ? (
+    <Spinner />
+  ) : (
     <div class="flex items-center justify-center h-screen">
       <div class="w-full max-w-md">
         <form
@@ -221,7 +224,9 @@ const Register = ({ register }) => {
 Register.propTypes = {
   register: PropTypes.func.isRequired,
 };
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  spinner: state.spinnerReducer
+});
 
 const mapDispatchToProps = {
   register,

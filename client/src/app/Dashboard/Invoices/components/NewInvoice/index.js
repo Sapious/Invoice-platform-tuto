@@ -1,7 +1,10 @@
 import React, { useState, useRef } from "react";
 import PropTypes from "prop-types";
 import { useClickAway } from "react-use";
-const NewInvoice = ({ closeModal }) => {
+import { createInvoice } from "../../../../../actions/invoice.actions";
+import { connect } from "react-redux";
+
+const NewInvoice = ({ closeModal, createInvoice }) => {
   const modalRef = useRef(null);
 
   useClickAway(modalRef, () => {
@@ -13,16 +16,43 @@ const NewInvoice = ({ closeModal }) => {
       description: "",
       quantity: "",
       unitPrice: "",
-      subTotal: "",
+      subTotal: 0,
     },
   ]);
-
+  const [InvoiceData, setInvoiceData] = useState({
+    buyerEmail: "",
+    issueDate: "",
+    dueDate: "",
+    description: "",
+    title: "",
+  });
+  const [Total, setTotal] = useState(0);
+  const onChangeInvoiceData = (e) => {
+    setInvoiceData({ ...InvoiceData, [e.target.name]: e.target.value });
+  };
+  const onChangeItemData = (e, index) => {
+    const newItems = [...Items];
+    newItems[index][e.target.name] = e.target.value;
+    newItems[index]["subTotal"] =
+      newItems[index]["quantity"] * newItems[index]["unitPrice"];
+    setItems(newItems);
+    calculateTotal();
+  };
+  const calculateTotal = () => {
+    let total = 0;
+    Items.forEach((el) => (total += el.subTotal));
+    setTotal(total);
+  };
+  const submitInvoice = async (e) => {
+    e.preventDefault();
+    await createInvoice({ ...InvoiceData, total: Total, items: Items });
+  };
   return (
     <div className="fixed h-full w-full left-0 top-0 bg-secondary bg-opacity-20 z-20">
       <div
         ref={modalRef}
-        className="relative bg-white w-1/3 float-right py-4 px-6 h-screen shadow-md overflow-y-auto">
-        <div className="flex items-center justify-between">
+        className="relative bg-white w-1/3 float-right py-4 px-6 h-screen shadow-md flex flex-col">
+        <div className="flex items-center justify-between pb-4">
           <div className="text-dark font-semibold text-lg">
             Create New Invoice
           </div>
@@ -32,16 +62,34 @@ const NewInvoice = ({ closeModal }) => {
             }}
             className="fas fa-times text-dark text-lg cursor-pointer"></i>
         </div>
-        <form>
+        <form className="overflow-y-auto">
           <div className="py-4 px-2 border-primary-shade border border-opacity-40 bg-blue-600 bg-opacity-20 rounded-md flex flex-col gap-2 my-4">
             <label htmlFor="buyer" className="text-dark font-medium ">
               Buyer Email
             </label>
             <input
-              name="buyer"
+              onChange={(e) => {
+                onChangeInvoiceData(e);
+              }}
+              name="buyerEmail"
               placeholder="Email"
               className="p-2  rounded focus:outline-none w-full text-dark"
+              type="email"
+            />
+          </div>
+          <div className="mn-2">
+            <label class="block text-dark text-sm font-normal mb-2" for="email">
+              Title
+            </label>
+            <input
+              onChange={(e) => {
+                onChangeInvoiceData(e);
+              }}
               type="text"
+              name="title"
+              id="title"
+              placeholder="Title"
+              className=" appearance-none border rounded w-full py-2 px-3 text-dark leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
           <div className="flex justify-between items-center gap-4 my-4">
@@ -52,6 +100,9 @@ const NewInvoice = ({ closeModal }) => {
                 Issued at
               </label>
               <input
+                onChange={(e) => {
+                  onChangeInvoiceData(e);
+                }}
                 type="date"
                 name="issueDate"
                 id="issueDate"
@@ -66,6 +117,9 @@ const NewInvoice = ({ closeModal }) => {
                 Due on
               </label>
               <input
+                onChange={(e) => {
+                  onChangeInvoiceData(e);
+                }}
                 type="date"
                 name="dueDate"
                 id="dueDate"
@@ -84,6 +138,7 @@ const NewInvoice = ({ closeModal }) => {
                     Name
                   </label>
                   <input
+                    onChange={(e) => onChangeItemData(e, index)}
                     class="shadow appearance-none border rounded w-full py-2 px-3 text-dark leading-tight focus:outline-none focus:shadow-outline"
                     name="name"
                     id="name"
@@ -100,6 +155,9 @@ const NewInvoice = ({ closeModal }) => {
                     Quantity
                   </label>
                   <input
+                    onChange={(e) => {
+                      onChangeItemData(e, index);
+                    }}
                     class="shadow appearance-none border rounded w-full py-2 px-3 text-dark leading-tight focus:outline-none focus:shadow-outline"
                     name="quantity"
                     id="quantity"
@@ -116,6 +174,9 @@ const NewInvoice = ({ closeModal }) => {
                     Price
                   </label>
                   <input
+                    onChange={(e) => {
+                      onChangeItemData(e, index);
+                    }}
                     class="shadow appearance-none border rounded w-full py-2 px-3 text-dark leading-tight focus:outline-none focus:shadow-outline"
                     name="unitPrice"
                     id="unitPrice"
@@ -125,7 +186,9 @@ const NewInvoice = ({ closeModal }) => {
                     placeholder="Price"
                   />
                 </div>
-                <div className="text-dark text-lg w-1/12 mb-2">1000</div>
+                <div className="text-dark text-lg w-1/12 mb-2">
+                  {Items[index]["subTotal"]}
+                </div>
                 <div
                   onClick={(e) => {
                     if (Items.length > 1) {
@@ -133,8 +196,8 @@ const NewInvoice = ({ closeModal }) => {
                       setItems(newArr);
                     }
                   }}
-                  className="text-dark text-lg w-1/12 mb-2">
-                  1000
+                  className="text-dark text-lg w-1/12 mb-2 cursor-pointer">
+                  {Items.length > 1 && <i class="fas fa-minus text-danger"></i>}
                 </div>
               </div>
             );
@@ -163,7 +226,7 @@ const NewInvoice = ({ closeModal }) => {
               <div className="text-dark font-semibold capitalize w-2/4 px-1">
                 Total:
               </div>
-              <div className="text-dark font-semibold w-2/4">1000</div>
+              <div className="text-dark font-semibold w-2/4">{Total}</div>
             </div>
           </div>
           <div class="mb-4 w-full">
@@ -173,6 +236,9 @@ const NewInvoice = ({ closeModal }) => {
               Description
             </label>
             <textarea
+              onChange={(e) => {
+                onChangeInvoiceData(e);
+              }}
               class="shadow appearance-none border rounded w-full py-2 px-3 text-dark leading-tight focus:outline-none focus:shadow-outline"
               name="description"
               id="description"
@@ -181,22 +247,23 @@ const NewInvoice = ({ closeModal }) => {
               placeholder="Description"
             />
           </div>
-          <div className="flex justify-end items-center gap-4">
-            <button
-              onClick={(e) => {
-                closeModal(false);
-              }}
-              class="px-4 py-2 font-semibold rounded text-dark border-secondary-shade border-opacity-40 border inline-block bg-secondary hover:bg-secondary-shade focus:bg-secondary-shade"
-              type="button">
-              Cancel
-            </button>
-            <button
-              class="px-4 py-2 font-semibold rounded text-white inline-block bg-primary hover:bg-primary-shade focus:bg-primary-shade"
-              type="button">
-              Create
-            </button>
-          </div>
         </form>
+        <div className="flex justify-end items-center gap-4 mt-auto pt-4">
+          <button
+            onClick={(e) => {
+              closeModal(false);
+            }}
+            class="px-4 py-2 font-semibold rounded text-dark border-secondary-shade border-opacity-40 border inline-block bg-secondary hover:bg-secondary-shade focus:bg-secondary-shade"
+            type="button">
+            Cancel
+          </button>
+          <button
+            onClick={(e) => submitInvoice(e)}
+            class="px-4 py-2 font-semibold rounded text-white inline-block bg-primary hover:bg-primary-shade focus:bg-primary-shade"
+            type="button">
+            Send
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -204,5 +271,12 @@ const NewInvoice = ({ closeModal }) => {
 
 NewInvoice.propTypes = {
   closeModal: PropTypes.func.isRequired,
+  createInvoice: PropTypes.func.isRequired,
 };
-export default NewInvoice;
+const mapStateToProps = (state) => ({});
+
+const mapDispatchToProps = {
+  createInvoice,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(NewInvoice);

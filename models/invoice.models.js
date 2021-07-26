@@ -22,12 +22,12 @@ const InvoiceSchema = new Schema(
     buyerConfirmation: {
       signature: { type: String },
       status: { type: String, default: "pending" },
-      confirmationDate: { type: Date },
+      Date: { type: Date },
     },
     sellerConfirmation: {
       signature: { type: String, required: true },
       status: { type: String, default: "confirmed" },
-      confirmationDate: { type: Date, default: Date.now() },
+      Date: { type: Date },
     },
     issueDate: { type: Date },
     dueDate: { type: Date },
