@@ -8,8 +8,7 @@
     "start": "node index.js",
     "server": "nodemon index.js",
     "client": "cd client && npm start",
-    "dev": "concurrently -n 'server,client' -c 'red,green' \"npm run server\" \"npm run client\" ",
-    "heroku-postbuild": "cd client && npm ci && npm run build && cp -R build ../build"
+    "dev": "concurrently -n 'server,client' -c 'red,green' \"npm run server\" \"npm run client\" "
   },
   "author": "Raed bahri",
   "license": "MIT",
