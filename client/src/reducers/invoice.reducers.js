@@ -35,6 +35,7 @@ export default function (state = initialState, action) {
     case CREATE_INVOICE:
       return {
         ...state,
+        invoices: [...state.invoices, payload],
         loading: false,
       };
     case GET_INVOICE:

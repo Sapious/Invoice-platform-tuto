@@ -26,7 +26,6 @@ router.post("/register", async (req, res) => {
       city: req.body.city,
       zipCode: req.body.zipCode,
       street: req.body.street,
-      note: req.body.note,
     });
     const savedAddress = await newAddress.save();
 
