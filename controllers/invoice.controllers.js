@@ -66,7 +66,7 @@ const confirmInvoice = async (req, res) => {
       {
         buyerConfirmation: {
           signature: req.verifiedUser.signature,
-          date: new Date().now(),
+          date: new Date().toISOString(),
         },
         status: "confirmed",
       },
@@ -100,9 +100,39 @@ const createInvoice = async (req, res) => {
     return res.status(500).json({ err_message: err });
   }
 };
+const getInvoiceAutoComplete = async (req, res) => {
+  const pagination = req.query.pagination ? parseInt(req.query.pagination) : 5;
+  const q = req.query.q !== "" ? req.query.q : "";
 
+  try {
+    const invoices = await Invoice.find({
+      reference: { $regex: `.*${q}.*` },
+    })
+      .limit(pagination)
+      .sort({ createdAt: 1 });
+
+    return res.status(200).json({ invoices: invoices });
+  } catch (err) {
+    return res.status(500).json({ err_message: err });
+  }
+};
+
+const getInvoiceByReference = async (req, res) => {
+  const invoiceRef = req.params.invoiceRef;
+  try {
+    const invoice = await Invoice.findOne({ reference: invoiceRef }).populate({
+      path: "buyer",
+      select: "firstName lastName",
+    });
+    return res.status(200).json({ invoice: invoice });
+  } catch (err) {
+    return res.status(500).json({ err_message: err });
+  }
+};
 module.exports.getInvoices = getInvoices;
 module.exports.createInvoice = createInvoice;
 module.exports.getOwnInvoices = getOwnInvoices;
 module.exports.cancelInvoice = cancelInvoice;
 module.exports.confirmInvoice = confirmInvoice;
+module.exports.getInvoiceAutoComplete = getInvoiceAutoComplete;
+module.exports.getInvoiceByReference = getInvoiceByReference;

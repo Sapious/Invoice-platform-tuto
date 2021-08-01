@@ -6,6 +6,8 @@ import {
   GET_OWN_INVOICES,
   CANCEL_INVOICE,
   CONFIRM_INVOICE,
+  SEARCH_INVOICE,
+  GET_INVOICE_BY_REF,
 } from "../constants/types";
 
 const initialState = {
@@ -18,6 +20,18 @@ const initialState = {
 export default function (state = initialState, action) {
   const { type, payload } = action;
   switch (type) {
+    case GET_INVOICE_BY_REF:
+      return {
+        ...state,
+        loading: false,
+        invoice: payload,
+      };
+    case SEARCH_INVOICE:
+      return {
+        ...state,
+        loading: false,
+        invoices: payload,
+      };
     case CREATE_INVOICE:
       return {
         ...state,

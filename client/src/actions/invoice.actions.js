@@ -7,6 +7,9 @@ import {
   CANCEL_INVOICE,
   SPINNER_LOADING,
   SPINNER_LOADED,
+  SEARCH_INVOICE,
+  GET_INVOICE_BY_REF,
+  CONFIRM_INVOICE,
 } from "../constants/types";
 
 export const createInvoice = (data) => async (dispatch) => {
@@ -17,11 +20,7 @@ export const createInvoice = (data) => async (dispatch) => {
     },
   };
   try {
-    const res = await axios.post(
-      "http://localhost:8000/invoices",
-      data,
-      config
-    );
+    const res = await axios.post("/api/invoices", data, config);
     dispatch({
       type: CREATE_INVOICE,
       payload: res.data.invoice,
@@ -37,7 +36,7 @@ export const createInvoice = (data) => async (dispatch) => {
 export const getInvoices = () => async (dispatch) => {
   dispatch({ type: SPINNER_LOADING });
   try {
-    const res = await axios.get("http://localhost:8000/invoices");
+    const res = await axios.get("/api/invoices");
     dispatch({
       type: GET_INVOICES,
       payload: res.data.invoices,
@@ -50,11 +49,26 @@ export const getInvoices = () => async (dispatch) => {
   }
   dispatch({ type: SPINNER_LOADED });
 };
-export const getInvoiceByRef = (invoiceRef) => async (dispatch) => {};
+export const getInvoiceByRef = (invoiceRef) => async (dispatch) => {
+  dispatch({ type: SPINNER_LOADING });
+  try {
+    const res = await axios.get(`/api/invoices/${invoiceRef}`);
+    dispatch({
+      type: GET_INVOICE_BY_REF,
+      payload: res.data.invoice,
+    });
+  } catch (err) {
+    dispatch({
+      type: INVOICE_ERROR,
+      payload: err,
+    });
+  }
+  dispatch({ type: SPINNER_LOADED });
+};
 export const getOwnInvoices = () => async (dispatch) => {
   dispatch({ type: SPINNER_LOADING });
   try {
-    const res = await axios.get("http://localhost:8000/invoices/me");
+    const res = await axios.get("/api/invoices/me");
     dispatch({
       type: GET_OWN_INVOICES,
       payload: res.data.invoices,
@@ -70,9 +84,7 @@ export const getOwnInvoices = () => async (dispatch) => {
 export const cancelInvoice = (invoiceId) => async (dispatch) => {
   dispatch({ type: SPINNER_LOADING });
   try {
-    const res = await axios.get(
-      `http://localhost:8000/invoices/${invoiceId}/cancel`
-    );
+    const res = await axios.get(`/api/invoices/${invoiceId}/cancel`);
     dispatch({
       type: CANCEL_INVOICE,
       payload: res.data.invoice,
@@ -88,12 +100,27 @@ export const cancelInvoice = (invoiceId) => async (dispatch) => {
 export const confirmInvoice = (invoiceId) => async (dispatch) => {
   dispatch({ type: SPINNER_LOADING });
   try {
-    const res = await axios.get(
-      `http://localhost:8000/invoices/${invoiceId}/confirm`
-    );
+    const res = await axios.get(`/api/invoices/${invoiceId}/confirm`);
     dispatch({
-      type: CANCEL_INVOICE,
+      type: CONFIRM_INVOICE,
       payload: res.data.invoice,
+    });
+  } catch (err) {
+    dispatch({
+      type: INVOICE_ERROR,
+      payload: err,
+    });
+  }
+  dispatch({ type: SPINNER_LOADED });
+};
+
+export const searchInvoiceByReference = (query) => async (dispatch) => {
+  dispatch({ type: SPINNER_LOADING });
+  try {
+    const res = await axios.get(`/api/invoices/auto_complete?q=${query}`);
+    dispatch({
+      type: SEARCH_INVOICE,
+      payload: res.data.invoices,
     });
   } catch (err) {
     dispatch({

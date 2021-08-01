@@ -6,18 +6,32 @@ import PropTypes from "prop-types";
 import {
   getOwnInvoices,
   cancelInvoice,
+  searchInvoiceByReference,
 } from "../../../actions/invoice.actions";
 import { parseISO, format } from "date-fns";
 import Spinner from "../../shared/Spinner";
-import { Link } from "react-router-dom";
-const Invoices = ({ getOwnInvoices, invoiceState, cancelInvoice, spinner }) => {
+import { Link, useRouteMatch } from "react-router-dom";
+const Invoices = ({
+  getOwnInvoices,
+  invoiceState,
+  cancelInvoice,
+  spinner,
+  searchInvoiceByReference,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [SearchReference, setSearchReference] = useState("");
   const closeModal = (e) => {
     setIsModalOpen(false);
   };
   useEffect(() => {
     getOwnInvoices();
   }, []);
+
+  const onChangeSearch = async (e) => {
+    e.preventDefault();
+    await setSearchReference(e.target.value);
+    await searchInvoiceByReference(e.target.value);
+  };
   return spinner.loading ? (
     <Spinner />
   ) : (
@@ -42,6 +56,9 @@ const Invoices = ({ getOwnInvoices, invoiceState, cancelInvoice, spinner }) => {
             placeholder="Keyword"
             className="py-2 pr-4 pl-8 rounded focus:outline-none w-full text-dark shadow"
             type="text"
+            onChange={(e) => onChangeSearch(e)}
+            value={SearchReference}
+            autoFocus
           />
           <span className="absolute ml-2">
             <i class="fas fa-search text-dark"></i>
@@ -56,7 +73,7 @@ const Invoices = ({ getOwnInvoices, invoiceState, cancelInvoice, spinner }) => {
           <div className="px-2 text-dark font-medium"> Action</div>
         </div>
         {invoiceState.invoices &&
-          invoiceState.invoices.map((elInvoice) => {
+          invoiceState?.invoices.map((elInvoice) => {
             return (
               <div className="grid grid-cols-8 bg-white shadow-md py-3.5 justify-items-start items-center rounded-md mb-4">
                 <div className="px-2 text-dark font-medium">
@@ -73,7 +90,7 @@ const Invoices = ({ getOwnInvoices, invoiceState, cancelInvoice, spinner }) => {
                 </div>
                 <div className="px-2 text-dark font-medium">
                   <Status
-                    text={elInvoice.status}
+                    text={elInvoice?.status}
                     icon={`${
                       elInvoice.status === "confirmed"
                         ? "fas fa-check"
@@ -91,7 +108,7 @@ const Invoices = ({ getOwnInvoices, invoiceState, cancelInvoice, spinner }) => {
                   />
                 </div>
                 <div className="px-2 text-dark font-medium flex justify-start items-center gap-4">
-                  {elInvoice.status === "pending" && (
+                  {elInvoice?.status === "pending" && (
                     <button
                       onClick={async (e) => {
                         e.preventDefault();
@@ -120,6 +137,7 @@ Invoices.propTypes = {
   getOwnInvoices: PropTypes.func.isRequired,
   cancelInvoice: PropTypes.func.isRequired,
   invoiceState: PropTypes.object.isRequired,
+  searchInvoiceByReference: PropTypes.func.isRequired,
   spinner: PropTypes.object.isRequired,
 };
 const mapStateToProps = (state) => ({
@@ -130,6 +148,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
   getOwnInvoices,
   cancelInvoice,
+  searchInvoiceByReference,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Invoices);
